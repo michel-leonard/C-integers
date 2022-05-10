@@ -1,6 +1,7 @@
 #include "cint.c"
 
 #include <stdio.h>
+
 int cint_print(const cint *num) {
     char *str = cint_to_string(num, 10);
     int res = printf("%s", str);
@@ -9,7 +10,7 @@ int cint_print(const cint *num) {
 }
 
 int main(void) {
-    unsigned n_fibonacci = 500, n_factorial = 70 ;
+    unsigned n_fibonacci = 500, n_factorial = 70;
     h_cint_begin();
     cint A, B, C;
     cint_init(&A, 4000, 0);
@@ -24,19 +25,15 @@ int main(void) {
     cint_print(&A);
 
     cint_reinit(&A, 1);
-    for (unsigned i = 2; i <= n_factorial; ++i) {
-        cint_reinit(&B, i);
-        cint_mul(&A, &B, &C);
-        cint_dup(&A, &C);
+    for (unsigned i = 0; i < n_factorial;) {
+        cint_mul(&A, cint_immediate(++i), &B);
+        cint_mul(&B, cint_immediate(++i), &A);
     }
     printf("\nFactorial %u is ", n_factorial);
-    cint_print(&A);
-    
+    cint_print(n_factorial & 1 ? &B : &A);
+
     free(A.mem);
     free(B.mem);
     free(C.mem);
     h_cint_clears();
 }
-
-// You can put it into a main.c file then compile + execute :
-// gcc -O3 -std=c99 -Wall -pedantic main.c ; ./a.out ;
