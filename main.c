@@ -37,3 +37,6 @@ int main(void) {
     free(C.mem);
     h_cint_clears();
 }
+
+// You can put it into a main.c file then compile + execute :
+// gcc -O3 -std=c99 -Wall -pedantic main.c ; ./a.out ;
