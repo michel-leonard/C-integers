@@ -8,7 +8,7 @@ int cint_print(const cint *num) {
     return res;
 }
 
-int main() {
+int main(void) {
     unsigned n_fibonacci = 500, n_factorial = 70 ;
     h_cint_begin();
     cint A, B, C;
@@ -20,16 +20,23 @@ int main() {
         cint_addi(&A, &B);
         cint_dup(&B, &C);
     }
-    printf("Fibonacci %d is ", n_fibonacci);
+    printf("Fibonacci %u is ", n_fibonacci);
     cint_print(&A);
+
     cint_reinit(&A, 1);
     for (unsigned i = 2; i <= n_factorial; ++i) {
         cint_reinit(&B, i);
         cint_mul(&A, &B, &C);
         cint_dup(&A, &C);
     }
-    printf("\nFactorial %d is ", n_factorial);
+    printf("\nFactorial %u is ", n_factorial);
     cint_print(&A);
-
+    
+    free(A.mem);
+    free(B.mem);
+    free(C.mem);
     h_cint_clears();
 }
+
+// You can put it into a main.c file then compile + execute :
+// gcc -O3 -std=c99 -Wall -pedantic main.c ; ./a.out ;
