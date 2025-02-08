@@ -55,7 +55,7 @@ static void cint_clear_sheet(cint_sheet *sheet) {
 	free(sheet);
 }
 
-__attribute__((unused)) static uint64_t cint_checksum(const cint *num) {
+static uint64_t cint_checksum(const cint *num) {
 	//  provide a checksum of the number that fit into a machine word.
 	uint64_t sum = 0x4eee588af4f90e1 ^ (num->end - num->mem) * num->nat;
 	for (h_cint_t *p = num->mem; p < num->end; ++p)
@@ -63,14 +63,14 @@ __attribute__((unused)) static uint64_t cint_checksum(const cint *num) {
 	return sum ;
 }
 
-__attribute__((unused)) static inline long long int cint_to_int(cint *num) {
+static inline long long int cint_to_int(cint *num) {
 	long long int res = 0;
 	for (h_cint_t *p = num->end - 1; p >= num->mem; --p)
 		res = (res << cint_exponent) + (long long int) *p;
 	return res * num->nat;
 }
 
-__attribute__((unused)) static inline void cint_negate(cint *num) {
+static inline void cint_negate(cint *num) {
 	num->nat *= 1 - ((num->mem != num->end) << 1);
 }
 
@@ -141,7 +141,7 @@ static void cint_reinit_by_string(cint *num, const char *str, const int base) {
 	num->end += *num->end != 0, num->mem != num->end || (num->nat = 1);
 }
 
-__attribute__((unused)) static inline void cint_init_by_string(cint *num, const size_t bits, const char *str, const int base) {
+static inline void cint_init_by_string(cint *num, const size_t bits, const char *str, const int base) {
 	cint_init(num, bits, 0), cint_reinit_by_string(num, str, base);
 }
 
@@ -164,7 +164,7 @@ static void cint_reinit_by_double(cint *num, const double value) {
 	}
 }
 
-__attribute__((unused)) static double cint_to_double(const cint *num) {
+static double cint_to_double(const cint *num) {
 	// sometimes tested, it worked.
 	uint64_t memory = cint_count_bits(num) + 1022, m_write = 1ULL << 52, m_read = 1 << memory % cint_exponent;
 	double res = 0;
@@ -179,7 +179,7 @@ __attribute__((unused)) static double cint_to_double(const cint *num) {
 	return (double) num->nat * res;
 }
 
-__attribute__((unused)) static inline void cint_init_by_double(cint *num, const size_t size, const double value) { cint_init(num, size, 0), cint_reinit_by_double(num, value); }
+static inline void cint_init_by_double(cint *num, const size_t size, const double value) { cint_init(num, size, 0), cint_reinit_by_double(num, value); }
 
 static void cint_dup(cint *to, const cint *from) {
 	// duplicate number (no verification about overlapping or available memory, caller must check)
@@ -319,7 +319,7 @@ static inline void cint_pow(cint_sheet *sheet, const cint *n, const cint *exp, c
 	cint_powi(sheet, res, exp);
 }
 
-__attribute__((unused)) static void cint_binary_div(const cint *lhs, const cint *rhs, cint *q, cint *r) {
+static void cint_binary_div(const cint *lhs, const cint *rhs, cint *q, cint *r) {
 	// the original division algorithm, it doesn't take any temporary variable.
 	cint_erase(r);
 	if (rhs->end == rhs->mem)
@@ -437,13 +437,13 @@ static char *cint_to_string_buffer(const cint *num, char * buf, const int base) 
 	return buf;
 }
 
-__attribute__((unused)) static inline char *cint_to_string(const cint *num, const int base) {
+static inline char *cint_to_string(const cint *num, const int base) {
 	char *mem = malloc(cint_approx_digits_from_bits(cint_count_bits(num), base));
 	assert(mem); // Allocate a string to represent the number in the given base.
 	return cint_to_string_buffer(num, mem, base);
 }
 
-__attribute__((unused)) static char *cint_to_string_buffer_alt(cint_sheet *sheet, const cint *num, char * buf, const int base) {
+static char *cint_to_string_buffer_alt(cint_sheet *sheet, const cint *num, char * buf, const int base) {
 	// designed for verifications, the two methods that output a number (negative, zero or positive)
 	// to a string are independent and must always provide the same output for bases 2 to 62.
 	assert(buf);
@@ -467,13 +467,13 @@ __attribute__((unused)) static char *cint_to_string_buffer_alt(cint_sheet *sheet
 	return buf;
 }
 
-__attribute__((unused)) static inline char *cint_to_string_alt(cint_sheet *sheet, const cint *num, const int base) {
+static inline char *cint_to_string_alt(cint_sheet *sheet, const cint *num, const int base) {
 	char *mem = malloc(cint_approx_digits_from_bits(cint_count_bits(num), base));
 	assert(mem); // Allocate a string to represent the number in the given base.
 	return cint_to_string_buffer_alt(sheet, num, mem, base);
 }
 
-__attribute__((unused)) static inline void cint_mul_mod(cint_sheet *sheet, const cint *lhs, const cint *rhs, const cint *mod, cint *res) {
+static inline void cint_mul_mod(cint_sheet *sheet, const cint *lhs, const cint *rhs, const cint *mod, cint *res) {
 	cint *a = h_cint_tmp(sheet, 2, res), *b = h_cint_tmp(sheet, 3, res);
 	cint_mul(lhs, rhs, a);
 	cint_div(sheet, a, mod, b, res);
@@ -515,7 +515,7 @@ static inline void cint_pow_modi(cint_sheet *sheet, cint *n, const cint *exp, co
 	}
 }
 
-__attribute__((unused)) static void cint_pow_mod(cint_sheet *sheet, const cint *n, const cint *exp, const cint *mod, cint *res) {
+static void cint_pow_mod(cint_sheet *sheet, const cint *n, const cint *exp, const cint *mod, cint *res) {
 	cint_dup(res, n);
 	cint_pow_modi(sheet, res, exp, mod);
 }
@@ -542,7 +542,7 @@ static void cint_gcd(cint_sheet *sheet, const cint *lhs, const cint *rhs, cint *
 
 }
 
-__attribute__((unused)) static void cint_binary_gcd(cint_sheet *sheet, const cint *lhs, const cint *rhs, cint *gcd) {
+static void cint_binary_gcd(cint_sheet *sheet, const cint *lhs, const cint *rhs, cint *gcd) {
 	// a binary GCD algorithm.
 	if (lhs->mem == lhs->end) cint_dup(gcd, rhs);
 	else if (rhs->mem == rhs->end) cint_dup(gcd, lhs);
