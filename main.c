@@ -3,39 +3,38 @@
 #include <stdio.h>
 
 int cint_print(const cint *num) {
-    char *str = cint_to_string(num, 10);
-    int res = printf("%s", str);
-    free(str);
-    return res;
+	char *str = cint_to_string(num, 10);
+	int res = printf("%s", str);
+	free(str);
+	return res;
 }
 
 int main(void) {
-    unsigned n_fibonacci = 500, n_factorial = 70;
-    h_cint_begin();
-    cint A, B, C;
-    cint_init(&A, 4000, 0);
-    cint_init(&B, 4000, 1);
-    cint_init(&C, 4000, 1);
-    for (unsigned i = 0; i < n_fibonacci; ++i) {
-        cint_dup(&C, &A);
-        cint_addi(&A, &B);
-        cint_dup(&B, &C);
-    }
-    printf("Fibonacci %u is ", n_fibonacci);
-    cint_print(&A);
+	char buf[8192];
+	unsigned n_fibonacci = 2000, n_factorial = 200;
+	cint_sheet *sheet = cint_new_sheet(4000);
+	cint nums[4], *A = nums, *B = A + 1, *C = A + 2, *D = A + 3;
+	for (int i = 0; i < 4; ++i)
+		cint_init(nums + i, 4000, i != 0);
 
-    cint_reinit(&A, 1);
-    for (unsigned i = 0; i < n_factorial;) {
-        cint_mul(&A, cint_immediate(++i), &B);
-        cint_mul(&B, cint_immediate(++i), &A);
-    }
-    printf("\nFactorial %u is ", n_factorial);
-    cint_print(n_factorial & 1 ? &B : &A);
+	for (unsigned i = 0; i < n_fibonacci; ++i) {
+		cint_dup(C, A);
+		cint_addi(A, B);
+		cint_dup(B, C);
+	}
+	printf("Fibonacci %u is %s", n_fibonacci, cint_to_string_buffer(A, buf, 10));
 
-    free(A.mem);
-    free(B.mem);
-    free(C.mem);
-    h_cint_clears();
+	cint_reinit(A, 1);
+	for (unsigned i = 0; i < n_factorial;) {
+		cint_reinit(D, ++i);
+		cint_mul(A, D, B);
+		cint_reinit(D, ++i);
+		cint_mul(B, D, A);
+	}
+	printf("\nFactorial %u is %s", n_factorial, cint_to_string_buffer(n_factorial & 1 ? B : A, buf, 10));
+	for (int i = 0; i < 4; ++i)
+		free(nums[i].mem);
+	cint_clear_sheet(sheet);
 }
 
 // You can put it into a main.c file then compile + execute :
