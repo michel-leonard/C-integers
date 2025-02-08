@@ -2,13 +2,6 @@
 
 #include <stdio.h>
 
-int cint_print(const cint *num) {
-	char *str = cint_to_string(num, 10);
-	int res = printf("%s", str);
-	free(str);
-	return res;
-}
-
 int main(void) {
 	char buf[8192];
 	unsigned n_fibonacci = 2000, n_factorial = 200;
