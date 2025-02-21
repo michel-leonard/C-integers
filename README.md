@@ -17,7 +17,7 @@ If `gcc` is not installed on Windows, you can install [MinGW](https://winlibs.co
 
 ### Running the demo  
 
-Compilation takes a few seconds, then you can start the factorizations :
+Compilation takes a few seconds, then you can start the demo :
 - **Windows**: `./demo.exe`
 - **macOS** and **Linux**: `./demo`
 
