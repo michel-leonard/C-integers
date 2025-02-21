@@ -2,6 +2,124 @@
 
 The cint library (released "as is", into the public domain, without any warranty, express or implied) is provided for handling large integers. It includes a variety of basic and advanced mathematical functions to support calculations. This solution does not use global variables but computation sheets, so it is stateless and thread-safe.
 
+
+## Key Structures
+
+### `cint` Structure
+
+The `cint` structure is used to represent large integers, with its value stored in a dynamically allocated array of `h_cint_t` (typically `int64_t`):
+
+```c
+typedef struct {
+    h_cint_t *mem;    // Memory storing the least significant bits (little-endian format)
+    h_cint_t *end;    // Memory storing the most significant bits (end-1)
+    h_cint_t nat;     // -1 for negative, +1 for positive (zero is positive)
+    size_t size;      // Allocated size, at least (end - mem)
+} cint;
+```
+
+### `cint_sheet` Structure
+
+The `cint_sheet` structure is used to manage temporary variables required for certain operations. It allows efficient memory usage when performing computations that require multiple intermediate results.
+
+```c
+typedef struct {
+    cint temp[10];    // Array of temporary variables for large number operations
+} cint_sheet;
+```
+
+## Functions
+
+### Memory Management
+
+- **`cint_new_sheet(size_t bits)`**  
+  Allocates a new `cint_sheet` for storing temporary variables needed during calculations.
+  
+- **`cint_clear_sheet(cint_sheet *sheet)`**  
+  Clears the memory used by a `cint_sheet`, releasing all allocated resources.
+
+- **`h_cint_tmp(cint_sheet *sheet, int id, const cint *least)`**  
+  Allocates memory for a temporary `cint` variable within the provided `cint_sheet`.
+
+### Integer Initialization & Conversion
+
+- **`cint_init(cint *num, size_t bits, long long int val)`**  
+  Initializes a `cint` with a specific size (in bits) and a long integer value.
+
+- **`cint_init_by_string(cint *num, size_t bits, const char *str, int base)`**  
+  Initializes a `cint` from a string representation of a number in a given base.
+
+- **`cint_to_int(cint *num)`**  
+  Converts a `cint` to a standard `long long int` (64-bit), truncating the value if necessary.
+
+- **`cint_to_string(const cint *num, int base)`**  
+  Converts a `cint` to a string in the specified base (e.g., decimal, hexadecimal).
+
+### Arithmetic Operations
+
+These operations modify the original `cint` (in-place), meaning the result of the operation is stored directly in one of the input variables:
+
+- **`cint_addi(cint *lhs, const cint *rhs)`**  
+  Adds `rhs` to `lhs` in place.
+
+- **`cint_subi(cint *lhs, const cint *rhs)`**  
+  Subtracts `rhs` from `lhs` in place.
+
+- **`cint_muli(cint *lhs, const cint *rhs)`**  
+  Multiplies `lhs` by `rhs` in place.
+
+- **`cint_divi(cint *lhs, const cint *rhs)`**  
+  Divides `lhs` by `rhs` in place.
+
+- **`cint_left_shifti(cint *num, size_t bits)`**  
+  Left shifts `num` by the specified number of bits.
+
+- **`cint_right_shifti(cint *num, size_t bits)`**  
+  Right shifts `num` by the specified number of bits.
+
+### Modular Arithmetic
+
+- **`cint_mul_mod(cint_sheet *sheet, const cint *lhs, const cint *rhs, const cint *mod, cint *res)`**  
+  Computes the product of `lhs` and `rhs` modulo `mod`, storing the result in `res`.
+
+- **`cint_pow_mod(cint_sheet *sheet, const cint *n, const cint *exp, const cint *mod, cint *res)`**  
+  Computes `n` raised to the power `exp` modulo `mod`, storing the result in `res`.
+
+- **`cint_modular_inverse(cint_sheet *sheet, const cint *lhs, const cint *rhs, cint *res)`**  
+  Computes the modular inverse of `lhs` modulo `rhs`, storing the result in `res`.
+
+### Advanced Operations
+
+- **`cint_is_prime(cint_sheet *sheet, const cint *N, int iterations, uint64_t *seed)`**  
+  Uses the Miller-Rabin primality test to check if `N` is prime. Temporary variables are allocated from `sheet`.
+
+- **`cint_gcd(cint_sheet *sheet, const cint *lhs, const cint *rhs, cint *gcd)`**  
+  Computes the greatest common divisor (GCD) of `lhs` and `rhs`, storing the result in `gcd`.
+
+- **`cint_sqrt(cint_sheet *sheet, const cint *num, cint *res, cint *rem)`**  
+  Computes the square root of `num`, storing the result in `res` and the remainder in `rem`.
+
+### Helper Functions
+
+- **`cint_checksum(const cint *num)`**  
+  Computes a checksum for the given `cint`.
+
+- **`cint_count_bits(const cint *num)`**  
+  Returns the number of bits required to represent `num`.
+
+- **`cint_count_zeros(const cint *num)`**  
+  Returns the number of trailing zeros in `num`.
+
+- **`cint_compare(const cint *lhs, const cint *rhs)`**  
+  Compares two `cint` values.
+
+- **`cint_to_double(const cint *num)`**  
+  Converts a `cint` to a `double`.
+
+- **`cint_nth_root(cint_sheet *sheet, const cint *num, unsigned nth, cint *res)`**  
+  Computes the nth root of `num`, storing the result in `res`.
+
+
 ## Real use
 
 There is a GitHub project that use this Big Numbers implementation, it's a Factorization software using [Quadratic Sieve](https://github.com/michel-leonard/C-Quadratic-Sieve) that is in **production** state.
