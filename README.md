@@ -2,6 +2,26 @@
 
 The cint library (released "as is", into the public domain, without any warranty, express or implied) is provided for handling large integers. It includes a variety of basic and advanced mathematical functions to support calculations. This solution does not use global variables but computation sheets, so it is stateless and thread-safe.
 
+## Get Started
+
+To build the executable, macOS and Linux users should use the **Terminal**, while Windows users should use **PowerShell**. The procedure takes just a few minutes :
+
+1. Open a Terminal or PowerShell.  
+2. Navigate to the directory containing the source code using the `cd` command.  
+3. Compile the demo using the command `gcc -Wall -pedantic -O2 -std=c99 main.c -o demo`.
+   
+If `gcc` is not installed on Windows, you can install [MinGW](https://winlibs.com/), which provides it. Then, simply replace `demo` with `demo.exe` in the command above.
+  
+- **macOS users**: Replace `gcc` with `clang`, which acts the same and is available natively.
+- **Linux users**: Install `gcc` with `sudo apt update && sudo apt install gcc`.  
+
+### Running the demo  
+
+Compilation takes a few seconds, then you can start the factorizations :
+- **Windows**: `./demo.exe
+- **macOS** and **Linux**: `./demo
+
+The software will display the Fibonacci number 2000 and the factorial of 200.
 
 ## Key Structures
 
