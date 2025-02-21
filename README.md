@@ -18,8 +18,8 @@ If `gcc` is not installed on Windows, you can install [MinGW](https://winlibs.co
 ### Running the demo  
 
 Compilation takes a few seconds, then you can start the factorizations :
-- **Windows**: `./demo.exe
-- **macOS** and **Linux**: `./demo
+- **Windows**: `./demo.exe`
+- **macOS** and **Linux**: `./demo`
 
 The software will display the Fibonacci number 2000 and the factorial of 200.
 
