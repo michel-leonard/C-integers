@@ -1,0 +1,43 @@
+name: C-integers Test
+
+on:
+  schedule:
+    - cron: '54 3 7,21 * *'
+  workflow_dispatch:
+
+env:
+  description: "Automated Testing — Michel Leonard verifies the operation of the Big Integers library"
+  related_url: "https://github.com/michel-leonard/C-integers"
+
+jobs:
+  cint-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: 📂 For each step below, a new shell will be started at the repository root
+        uses: actions/checkout@v6
+
+      - name: 👉 Disable the user manual database, which is not needed in this CI/CD workflow
+        run: sudo ln --backup --symbolic --verbose $(which true) $(which mandb)
+
+      - name: 📦 Set up GCC
+        run: command -v gcc > /dev/null || { sudo apt-get update --allow-unauthenticated && sudo apt-get install --allow-unauthenticated --no-install-recommends --assume-yes gcc ; }
+
+      - name: 🎲 Updates the random number generator seed in the source code
+        run: sed -i "s/const uint64_t seed = 1;/const uint64_t seed = $(od -An -N8 -tu8 /dev/urandom | tr -d ' ')llu;/" main.c
+
+      - name: ⚙️ Compile the Big Integers testing program in C
+        run: gcc --version && gcc -Wall -pedantic -O2 -std=c99 main.c -o demo
+
+      - name: 🚀 Run C tests and confirm that everything works as expected
+        run: ./demo 2>&1 | tee -a summary.txt
+
+      - name: 🏁 Conclusion
+        run: |
+          if grep -q "10 success and 0 failures" summary.txt; then
+            echo "✔️ Verification successful. Every test was a success."
+          else
+            echo "❌ Verification failed. See above for details."
+            exit 1
+          fi
